@@ -7,6 +7,8 @@ After EVERY fix/patch/write_file/cron action. Mandatory. No exceptions.
 1. After applying a fix, call `rsi-log fix --summary "<what was fixed>" --category <server_config|pipeline|maintenance|memory|cron> --files <comma-separated paths>`
 2. If the fix is a lesson learned, also call `rsi-log lesson --text "<lesson>" --category <same> --severity <high|medium|low>`
 3. For recurring issues, call `rsi-log pattern --description "<pattern>" --status <observed|applied|resolved> --severity <high|medium|low> --applied "<fix applied>"`
+4. When something surprising or interesting happens (not a bug, but a pattern, unexpected behavior, or something worth investigating), call:
+   `rsi-log surprise --text "<what was surprising>" --category <same> --signal <high|medium|low> [--investigate]`
 
 ## Categories
 - `server_config` — llama.cpp, systemd, config.yaml changes
@@ -44,3 +46,22 @@ tail -1 ~/.hermes/logs/rsi_audit.jsonl | python3 -m json.tool
 - Don't skip logging "small" fixes
 - Don't batch-logged at end of session (forget, incomplete)
 - Don't use vague summaries ("fixed things")
+- Don't only report failures — also report surprises, patterns, and interesting findings
+- Don't ignore unexpected behaviors — they often reveal deeper patterns
+
+## When to Report Surprises
+Report a surprise when:
+- Something behaves differently than expected (even if it works)
+- You notice a pattern that wasn't in your mental model
+- A tool or system does something clever or unexpected
+- There's a discrepancy between documentation and reality
+- You find something worth investigating later
+- A "bug" turns out to be a feature or design choice
+- Two systems interact in an unexpected way
+
+Signal levels:
+- `high` — reveals a fundamental misunderstanding, affects multiple systems, worth deep investigation
+- `medium` — interesting pattern, might be useful later
+- `low` — minor curiosity, worth noting but not urgent
+
+Add `--investigate` when you want to revisit this later. High-signal surprises are also added to the learning_db patterns table.
